@@ -19,18 +19,23 @@ build_tables = [
             stop_desc TEXT, 
             stop_lat FLOAT, 
             stop_lon FLOAT, 
-            zone_id INTEGER,
+            zone_id TEXT,
             stop_url TEXT,
             location_type INTEGER,
             vehicle_type INTEGER,
+            wheelchair_boarding INTEGER,
+            level_id TEXT,
+            platform_code TEXT,
             FOREIGN KEY (parent_station) REFERENCES stops (stop_id)
         );""",
 
         """CREATE TABLE IF NOT EXISTS routes (
-            route_id INTEGER PRIMARY KEY, 
+            route_id TEXT PRIMARY KEY, 
             agency_id TEXT, 
             parent_station TEXT,
             route_desc TEXT, 
+            route_short_name TEXT,
+            route_long_name TEXT,
             route_type INTEGER, 
             route_url TEXT, 
             route_color TEXT, 
@@ -60,11 +65,11 @@ build_tables = [
 
         """CREATE TABLE IF NOT EXISTS trips (
             trip_id TEXT PRIMARY KEY, 
-            route_id INTEGER,
+            route_id TEXT,
             service_id TEXT, 
             trip_headsign TEXT, 
             trip_short_name TEXT, 
-            direction_id INTEGER, 
+            direction_id TEXT, 
             block_id TEXT, 
             shape_id TEXT,
             wheelchair_accessible INTEGER,
@@ -119,8 +124,8 @@ build_tables = [
         """CREATE TABLE IF NOT EXISTS transfers (
             from_stop_id TEXT,
             to_stop_id TEXT,
-            from_route_id INTEGER,
-            to_route_id INTEGER,
+            from_route_id TEXT,
+            to_route_id TEXT,
             from_trip_id TEXT,
             to_trip_id TEXT,
             transfer_type INTEGER,
@@ -136,3 +141,24 @@ build_tables = [
         );"""
 
 ]
+
+route_freq_sql = """SELECT 
+        trips.route_id,
+        CAST(SUBSTR(arrival_time, 1, 2) AS INTEGER) AS hour,
+        COUNT(*) AS trip_count
+    FROM stop_times
+    JOIN trips ON stop_times.trip_id = trips.trip_id
+    WHERE arrival_time IS NOT NULL
+      AND CAST(SUBSTR(arrival_time, 1, 2) AS INTEGER) BETWEEN 8 AND 20
+      AND trips.route_id IN (
+          SELECT route_id
+          FROM stop_times
+          JOIN trips ON stop_times.trip_id = trips.trip_id
+          WHERE arrival_time IS NOT NULL
+            AND CAST(SUBSTR(arrival_time, 1, 2) AS INTEGER) BETWEEN 8 AND 20
+          GROUP BY route_id
+          ORDER BY COUNT(*) DESC
+          LIMIT 10
+      )
+    GROUP BY trips.route_id, hour
+    ORDER BY trips.route_id, hour;"""

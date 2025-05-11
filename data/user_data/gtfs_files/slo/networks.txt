@@ -1,3 +1,0 @@
-﻿network_id,network_name
-south-county-routes,South County Routes
-paso-robles-routes,Paso Robles Routes

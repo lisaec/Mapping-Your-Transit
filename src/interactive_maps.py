@@ -1,13 +1,12 @@
-import geopandas as gpd
-from shapely.geometry import LineString
 from src.feed import *
 import folium
 import warnings
-import numpy as np
 warnings.filterwarnings('ignore')
 
 def live_map(feed):
     m = folium.Map(location= feed.center_pt(), zoom_start=12, tiles="Cartodb Positron")
+
+    departures = feed.departure_info()
 
     for index,row in feed.trips_shapes_routes().iterrows():
 
@@ -19,6 +18,10 @@ def live_map(feed):
                        ).add_to(m)
 
     for index, row in feed.stops().iterrows():
+        if row.stop_id in departures:
+            popup = f'{row.stop_name}<br>{departures[row.stop_id]}'
+        else:
+            popup = f'{row.stop_name}'
         folium.CircleMarker(
                 location=[row['stop_lat'], row['stop_lon']],
                 radius = 2,
@@ -26,12 +29,10 @@ def live_map(feed):
                 fill_color = 'white',
                 color = 'black',
                 weight = 1,
-                tooltip= f'{row.stop_name}'
+                tooltip= popup
 
             ).add_to(m)
         
-    
-    m.save(f"data/outputs/live_map_html/{feed.name}.html")
 
     return m
 

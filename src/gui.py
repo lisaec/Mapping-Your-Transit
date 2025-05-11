@@ -1,5 +1,6 @@
 
 from dash import Dash, html, dcc, Input, Output, callback, State
+import dash_bootstrap_components as dbc
 import dash
 import base64
 import zipfile
@@ -12,8 +13,7 @@ from src import feed
 from src import interactive_maps
 from src import posters
 importlib.reload(feed)
-importlib.reload(feed)
-
+importlib.reload(posters)
 
 import os
 
@@ -22,7 +22,8 @@ warnings.filterwarnings('ignore')
 
 
 def run_app() -> None:
-    app = Dash(__name__)
+    app = Dash(__name__, 
+                external_stylesheets=[dbc.themes.DARKLY])
     app.title = 'Mapping Your Transit'
 
     create_layout(app)
@@ -36,22 +37,27 @@ def create_layout(app: Dash) -> None:
         children=[
             html.H1('Mapping Your Transit'),
             html.Hr(),
-            html.H3("Create an interactive transit map by uploading your General Transit Feed Specification (GTFS) Folder below or select from the example transit systems"),
+            html.H4("Create an interactive transit map by uploading your General Transit Feed Specification (GTFS) Folder below or select from the example transit systems"),
 
             # Side-by-side container for dropdown and upload
             html.Div(
-                style={'display': 'flex', 'gap': '20px', 'alignItems': 'center'},
+                style={'display': 'flex', 'gap': '50px', 'alignItems': 'center'},
                 children=[
-                    dcc.Dropdown(
-                        options=[
-                            {'label': 'Williamsburg', 'value': 'Williamsburg'},
-                            {'label': 'New York City Subway', 'value': 'New York'},
-                            {'label': 'San Luis Obispo', 'value': 'San Luis Obispo'}
-                        ],
-                        value= None,
-                        id='demo-dropdown',
-                        style={'width': '50%'}
-                    ),
+                        dcc.Dropdown(
+                            id='demo-dropdown',
+                            options=[
+                                {'label': 'Williamsburg', 'value': 'Williamsburg'},
+                                {'label': 'New York City Subway', 'value': 'New York'},
+                                {'label': 'San Luis Obispo', 'value': 'San Luis Obispo'}
+                            ],
+                            value = None,
+                            placeholder="Select a sample feed",
+                                style={
+                            'width': '100%',
+                            'color': 'black',
+                            'backgroundColor': 'white'
+                        }
+                        ),
                     dcc.Upload(
                         id='upload-data',
                         children=html.Div([
@@ -73,24 +79,61 @@ def create_layout(app: Dash) -> None:
                 ]
             ),
 
-            html.Div(id='dd-output-container'),
-            html.Div(id='output-data-upload'),
-
             # Map display panel
-            html.Div(id='map-container', style={'marginTop': '20px'}),
-            html.Br(),
 
-            html.Button("Download Poster Map", id="btn_txt"),
-            dcc.Download(id="download_text_index"),
+            html.Div(
+                style={'display': 'flex', 'gap': '50px', 'alignItems': 'center'},
+                children=[
 
-            #active feed storage
+                    html.Div(
+                                id='map-container',
+                                children= html.Div(
+                                    "No map loaded yet.",
+                                    style={
+                                        "height": "600px",
+                                        "backgroundColor": "#f9f9f9",
+                                        "textAlign": "center",
+                                        "lineHeight": "600px",
+                                        "color": "#666",
+                                        "fontStyle": "italic"
+                                    }
+                                ),
+                                style={
+                                    'marginTop': '20px',
+                                    'width': '70%',
+                                    'marginLeft': 'auto',
+                                    'marginRight': '0'
+                                }
+                            ),
+                    html.Br(),
+
+                    html.Div(
+                        [html.Label("Include Frequency Summary?"),
+                            dcc.RadioItems(
+                                id='include-summary-input',
+                                options=[
+                                    {'label': 'Yes', 'value': True},
+                                    {'label': 'No', 'value': False}
+                                ],
+                                value= True,  # default choice
+                                labelStyle={'display': 'inline-block', 'margin-right': '10px'}
+                            ),
+                            html.Br(), 
+                            dbc.Button("Download Poster Map", id="btn_txt", color = "secondary", className="me-1")
+                        ]
+                    ),
+
+                    dcc.Download(id="download_text_index")
+                ]
+            ),
+
+            # active feed storage
             dcc.Store(id='active-feed-string')
         ]
     )
 
     app.layout = layout
 
-    return None
 
 
 def register_callbacks(app):
@@ -103,31 +146,88 @@ def register_callbacks(app):
     )
     def update_map(contents, demo_choice, filename):
 
+        placeholder = html.Div(
+            "Select a Transit Feed",
+            style={
+                "height": "600px",
+                "backgroundColor": "#f9f9f9",
+                "textAlign": "center",
+                "lineHeight": "600px",
+                "color": "#666",
+            })
+        
+        def label_box(feed):
+            return html.Div(
+                feed.agency_name(),
+                style={
+                    "marginTop": "20px",
+                    "textAlign": "center",
+                    "padding": "10px",
+                    "border": "1px solid black",
+                    "borderRadius": "0px",
+                    "color": "black",
+                    "fontWeight": "bold",
+                    "backgroundColor": "#f0f8ff",
+                    "width": "60%",
+                    "marginLeft": "auto",
+                    "marginRight": "auto"
+                }
+            )
+        def website_box(feed):
+                return html.Div(children=html.A(f"Agency Website", href=feed.agency_url(), target="_blank"),
+                style={
+                    "marginTop": "20px",
+                    "textAlign": "center",
+                    "padding": "10px",
+                    "border": "1px solid black",
+                    "borderRadius": "0px",
+                    "color": "black",
+                    "textDecoration": "none",
+                    "fontWeight": "bold",
+                    "backgroundColor": "#f0f8ff",
+                    "width": "60%",
+                    "marginLeft": "auto",
+                    "marginRight": "auto"
+                }
+            )
+
         if contents is not None:
             # User uploaded a file
-            return read_feed(contents, filename)
-        
+            map_frame, feed_path = read_feed(contents, filename)
+            return html.Div([
+                map_frame,
+                label_box(feed.Feed(feed_path)),
+                website_box(feed.Feed(feed_path))
+            ]), feed_path
+
         elif demo_choice:
             # User picked a sample dataset
-            return load_sample_feed(demo_choice)
+            map_frame, feed_path = load_sample_feed(demo_choice)
+            return html.Div([
+                map_frame,
+                label_box(feed.Feed(feed_path)),
+                website_box(feed.Feed(feed_path))
+            ]), feed_path
         
         else:
             # Neither uploaded nor selected
-            return html.Div("No map loaded yet.", style={"height": "600px", "backgroundColor": "#f9f9f9", "textAlign": "center", "lineHeight": "600px"}), None
+            return placeholder, None
         
 #callback for poster download
     @app.callback(
     Output("download_text_index", "data"),
     Input("btn_txt", "n_clicks"),
-    State('active-feed-string', 'data'),  # <-- use State here
+    State('active-feed-string', 'data'),  
+    State('include-summary-input', 'value'),
     prevent_initial_call=True
 )
-    def throw_poster(n_clicks, filename):
+    def throw_poster(n_clicks, filename, heatmap_choice):
         if not filename:
             return None  # no feed selected, nothing to generate
 
-        poster_file = posters.map(feed.Feed(filename))
+        poster_file = posters.map(feed.Feed(filename), Heatmap = heatmap_choice)
         return dcc.send_file(poster_file) 
+    
 
 def read_feed(contents, filename):
     #contents is what is uploaded, filename the original file name "folder.zip"
@@ -154,9 +254,7 @@ def read_feed(contents, filename):
     folium_map = interactive_maps.live_map(gtfs_feed)
     map_html = folium_map.get_root().render()
 
- 
-
-    return html.Iframe(srcDoc=map_html, width='50%', height='600', style={"border": "none"}), feed_filename 
+    return html.Iframe(srcDoc=map_html, width='70%', height='600', style={"border": "none"}), feed_filename 
 
 
 def load_sample_feed(demo_choice):
@@ -175,4 +273,4 @@ def load_sample_feed(demo_choice):
     folium_map = interactive_maps.live_map(gtfs_feed)
     map_html = folium_map.get_root().render()
 
-    return html.Iframe(srcDoc=map_html, width='50%', height='600', style={"border": "none"}), gtfs_folder_path
+    return html.Iframe(srcDoc=map_html, width='70%', height='600', style={"border": "none"}), gtfs_folder_path

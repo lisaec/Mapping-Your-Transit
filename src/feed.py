@@ -2,7 +2,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 from typing import Type
-import folium
 from src import my_sql
 import sqlite3
 import geopandas as gpd
@@ -12,31 +11,38 @@ from shapely.geometry import LineString
 #creating a class for reading in the feed data
 
 class Feed:
-
-    
+    """This class holds the data for each GTFS feed uploaded/selected. It creates a database for the feed and includes methods for accessing each table, pre-processing geospatial data, and creating map features"""
     def __init__(
     self,
     gtfs_path: str
     ):
+        #defining file paths
         self._gtfs_path = gtfs_path
         self.name = os.path.basename(os.path.normpath(gtfs_path))
         self.parent_dir = os.path.dirname(os.path.dirname(gtfs_path))
         self.db_path = os.path.join(self.parent_dir, "databases", f"{self.name}.db")
+
+        #connecting to database
         self.conn = sqlite3.connect(self.db_path)
         self.cursor = self.conn.cursor()
-        self._create_tables()
-        self._insert_data()
+
+        #creating database if it doesn't exist
+        if not self._database_exists():
+            self._create_tables()
+            self._insert_data()
 
     #file overviews
     def gtfs_path(self):
+        """path to data"""
         return self._gtfs_path
     
     def get_files(self):
+        """list of files in gtfs"""
         return os.listdir(self._gtfs_path)
     
     #methods to access each file
     
-    #essential files present in all GTFS (not true in practice but acc to documentation?)
+    #essential files present in MOST GTFS 
     def stops(self):
         return extract_file('stops.txt', self)
     
@@ -49,39 +55,79 @@ class Feed:
     def agency(self):
         return extract_file('agency.txt', self)
 
+    #cond.required
     def calendar_dates(self):
         return extract_file('calendar_dates.txt', self)
 
     def stop_times(self):
         return extract_file('stop_times.txt', self)
 
+    #cond. required
     def calendar(self):
-        return extract_file('calendar_dates.txt', self)
+        return extract_file('calendar.txt', self)
     
-   #additional files I will use - need to implement error messaging if not available
+   #cond. required
     def shapes(self):
         return extract_file('shapes.txt', self)
     
+    #not required
     def transfers(self):
         return extract_file('transfers.txt', self)
     
-    #Building a database
-    def _create_tables(self):
-        table_statements = my_sql.build_tables
+    #Building the database
+    def _database_exists(self) -> bool:
+        """Checks if the example essential table 'agency' exists  """
+        self.cursor.execute("""
+            SELECT name FROM sqlite_master WHERE type='table' AND name='agency';
+        """)
+        return bool(self.cursor.fetchone())
 
+
+    def _create_tables(self):
+        """builds tables using sql in my_sql.py"""
+        table_statements = my_sql.build_tables
         for statement in table_statements:
             self.cursor.execute(statement)
         self.conn.commit()
+        return None
+    
+    def _get_table_columns(self, table_name):
+        """Gets the columns of a table so that the dfs uploaded can be filtered (avoids errors)"""
+        self.cursor.execute(f"PRAGMA table_info({table_name})")
+        return [row[1] for row in self.cursor.fetchall()]  
+
+    # def _insert_data(self):
+    #     self.agency().to_sql('agency', self.conn, if_exists='replace', index=False)
+    #     self.stops().to_sql('stops', self.conn, if_exists='replace', index=False)
+    #     self.shapes().to_sql('shapes', self.conn, if_exists='replace', index=False)
+    #     self.routes().to_sql('routes', self.conn, if_exists='replace', index=False)
+    #     self.trips().to_sql('trips', self.conn, if_exists='replace', index=False)
+    #     self.transfers().to_sql('transfers', self.conn, if_exists='replace', index=False)
+    #     self.calendar_dates().to_sql('calendar_dates', self.conn, if_exists='replace', index=False)
+    #     self.stop_times().to_sql('stop_times', self.conn, if_exists='replace', index=False)
+
+    def insert_dataframe(self, df: pd.DataFrame, table_name: str):
+        """inserts data from a pandas dataframe to the database"""
+        filtered_df = df[[col for col in df.columns if col in self._get_table_columns(table_name)]]
+        columns = filtered_df.columns.tolist()
+        placeholders = ', '.join(['?'] * len(columns))
+        insert_sql = f"INSERT INTO {table_name} ({', '.join(columns)}) VALUES ({placeholders})"
+
+        for _, row in filtered_df.iterrows():
+            values = [None if pd.isna(val) else val for val in row]
+            self.cursor.execute(insert_sql, values)
+
+        self.conn.commit()
 
     def _insert_data(self):
-        self.agency().to_sql('agency', self.conn, if_exists='replace', index=False)
-        self.stops().to_sql('stops', self.conn, if_exists='replace', index=False)
-        self.shapes().to_sql('shapes', self.conn, if_exists='replace', index=False)
-        self.routes().to_sql('routes', self.conn, if_exists='replace', index=False)
-        self.trips().to_sql('trips', self.conn, if_exists='replace', index=False)
-        # self.transfers().to_sql('transfers', self.conn, if_exists='replace', index=False)
-        # self.calendar_dates().to_sql('calendar_dates', self.conn, if_exists='replace', index=False)
-        self.stop_times().to_sql('stop_times', self.conn, if_exists='replace', index=False)
+        """inserts data into database for all essential files"""
+        self.insert_dataframe(self.agency(), 'agency')
+        self.insert_dataframe(self.stops(), 'stops')
+        self.insert_dataframe(self.shapes(), 'shapes')
+        self.insert_dataframe(self.routes(), 'routes')
+        self.insert_dataframe(self.trips(), 'trips')
+        self.insert_dataframe(self.stop_times(), 'stop_times')
+
 
     def close(self):
         self.conn.close()
@@ -105,6 +151,8 @@ class Feed:
         return shape_points
     
     def trips_shapes_routes(self) -> pd.DataFrame:
+        """returns geodataframe with trip, route, and shape data for mapping"""
+
         sql = """ SELECT * FROM trips 
                  JOIN routes USING (route_id)
                  
@@ -112,17 +160,70 @@ class Feed:
                  and route_color IS NOT NULL;"""
         
         trips_routes = pd.read_sql(sql, self.conn)
-        trips_shapes_routes = trips_routes.join(self.shape_pts(), on='shape_id')
-        trips_shapes_routes = gpd.GeoDataFrame(trips_shapes_routes, geometry= "shape_points")
+        shapes = self.shape_pts().to_frame().reset_index()
+
+        trips_routes['shape_id'] = trips_routes['shape_id'].astype(str)
+        shapes['shape_id'] = shapes['shape_id'].astype(str)
+        
+        trips_shapes_routes = trips_routes.merge(shapes, on='shape_id', how='left')
+        trips_shapes_routes = gpd.GeoDataFrame(trips_shapes_routes, geometry = "shape_points")
+
+        #removing duplicate linestrings for speed and clean-ness
+        def normalize_linestring(ls):
+            """organizes linestrings smallest to largest"""
+            coords = list(ls.coords)
+            return tuple(coords if coords[0] <= coords[-1] else coords[::-1])
+
+        trips_shapes_routes['normalized'] = trips_shapes_routes.geometry.apply(normalize_linestring)
+        trips_shapes_routes_unique = trips_shapes_routes.drop_duplicates(subset='normalized').copy()
+        trips_shapes_routes_unique.drop(columns='normalized', inplace=True)
+
         
         
-        return trips_shapes_routes
+        return trips_shapes_routes_unique
     
     #other functions
-    
     def agency_name(self) -> str:
         "Returns agency name as a string"
         return self.agency()['agency_name'][0]
+    
+    #other functions
+    def agency_url(self) -> str:
+        "Returns agency name as a string"
+        return self.agency()['agency_url'][0]
+        
+
+    def departure_info(self):
+        """"returns a dictionary of departure info by stop id for pop"""
+        times = self.stop_times()
+        times['departure_time'] = pd.to_timedelta(times['departure_time'])
+        grouped = times.groupby(['stop_id'])
+        
+        dept_info = {}
+
+        for stop_id, group in grouped:
+            times = group['departure_time'].sort_values()
+            if len(times) < 2:
+                freq = "N/A"
+            else:
+                deltas = times.diff().dropna()
+                avg_freq = deltas.mean()
+                freq = f"Every {int(avg_freq.total_seconds() // 60)} minutes"
+
+            first = str(times.min()).split(" ")[-1][:-3]
+            last = str(times.max()).split(" ")[-1][:-3]
+            count = len(times)
+
+            dept_info[stop_id[0]] = f"{count} daily departures: {freq} from {first} to {last}"
+            
+        return dept_info
+    
+
+    def route_freq(self):
+        """returns table of top 10 routes by hourly frequency"""
+        route_freq = pd.read_sql(my_sql.route_freq_sql, self.conn)
+        pivot = route_freq.pivot(index='route_id',  columns='hour', values='trip_count').fillna(0)
+        return pivot
     
     
 def extract_file(file: str, feed: Type['Feed']):
@@ -139,4 +240,7 @@ def extract_file(file: str, feed: Type['Feed']):
     else:
         print(f'File "{file_path}" is missing.')
         return None
+    
+
+
 
