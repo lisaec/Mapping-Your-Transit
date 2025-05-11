@@ -65,20 +65,20 @@ def create_layout(app: Dash) -> None:
                                 ['Drag and Drop Compressed GTFS Folder or ',
                                     html.A('Select File')
                                 ]
-                        ),
-                        style={
-                            'width': '100%',
-                            'height': '60px',
-                            'lineHeight': '60px',
-                            'borderWidth': '1px',
-                            'borderStyle': 'dashed',
-                            'borderRadius': '5px',
-                            'textAlign': 'center',
-                            'padding': '0 10px'
-                        },
-                        multiple=False
-                    )
-                ]
+                            ),
+                            style={
+                                'width': '100%',
+                                'height': '60px',
+                                'lineHeight': '60px',
+                                'borderWidth': '1px',
+                                'borderStyle': 'dashed',
+                                'borderRadius': '5px',
+                                'textAlign': 'center',
+                                'padding': '0 10px'
+                            },
+                            multiple=False
+                        )
+                    ]
             ),
 
             # Map display panel and Poster Download side-by-side
@@ -104,7 +104,7 @@ def create_layout(app: Dash) -> None:
                                     'marginTop': '20px',
                                     'width': '70%',
                                     'marginLeft': 'auto',
-                                    'marginRight': '0'
+                                    'marginRight': 'auto'
                                 }
                             ),
                     html.Br(),
@@ -118,7 +118,7 @@ def create_layout(app: Dash) -> None:
                                     {'label': 'No', 'value': False}
                                 ],
                                 value= True,  # default choice
-                                labelStyle={'display': 'inline-block', 'margin-right': '10px'}
+                                labelStyle={'display': 'inline-block', 'margin-right': '30px'}
                             ),
                             html.Br(), 
                             dbc.Button("Download Poster Map", id="btn_txt", color = "secondary", className="me-1")
@@ -172,8 +172,8 @@ def register_callbacks(app):
                     "borderRadius": "0px",
                     "color": "black",
                     "fontWeight": "bold",
-                    "backgroundColor": "#f0f8ff",
-                    "width": "60%",
+                    "backgroundColor": 'white',
+                    "width": "50%",
                     "marginLeft": "auto",
                     "marginRight": "auto"
                 }
@@ -190,8 +190,8 @@ def register_callbacks(app):
                     "color": "black",
                     "textDecoration": "none",
                     "fontWeight": "bold",
-                    "backgroundColor": "#f0f8ff",
-                    "width": "60%",
+                    "backgroundColor": 'white',
+                    "width": "50%",
                     "marginLeft": "auto",
                     "marginRight": "auto"
                 }
