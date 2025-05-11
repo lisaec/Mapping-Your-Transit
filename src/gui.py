@@ -1,13 +1,10 @@
 
 from dash import Dash, html, dcc, Input, Output, callback, State
 import dash_bootstrap_components as dbc
-import dash
 import base64
 import zipfile
-import uuid
-import shutil
-
 import importlib
+import os
 
 from src import feed
 from src import interactive_maps
@@ -15,13 +12,14 @@ from src import posters
 importlib.reload(feed)
 importlib.reload(posters)
 
-import os
 
 import warnings
 warnings.filterwarnings('ignore')
 
-
 def run_app() -> None:
+
+    """Runs the Dash App when called in main python file"""
+
     app = Dash(__name__, 
                 external_stylesheets=[dbc.themes.DARKLY])
     app.title = 'Mapping Your Transit'
@@ -32,14 +30,17 @@ def run_app() -> None:
     app.run(debug=False)
 
 def create_layout(app: Dash) -> None:
+    """Sets up the layout of the App"""
+
+    #Main Layout (contains all main features)
     layout = html.Div(
         id='main-div',
         children=[
-            html.H1('Mapping Your Transit'),
-            html.Hr(),
+            html.H1('Mapping Your Transit'), #title
+            html.Hr(), #horizontal Line
             html.H4("Create an interactive transit map by uploading your General Transit Feed Specification (GTFS) Folder below or select from the example transit systems"),
 
-            # Side-by-side container for dropdown and upload
+            # side-by-side container for dropdown and upload
             html.Div(
                 style={'display': 'flex', 'gap': '50px', 'alignItems': 'center'},
                 children=[
@@ -53,17 +54,18 @@ def create_layout(app: Dash) -> None:
                             value = None,
                             placeholder="Select a sample feed",
                                 style={
-                            'width': '100%',
-                            'color': 'black',
-                            'backgroundColor': 'white'
-                        }
+                                    'width': '100%',
+                                    'color': 'black',
+                                    'backgroundColor': 'white'
+                                }
                         ),
-                    dcc.Upload(
-                        id='upload-data',
-                        children=html.Div([
-                            'Drag and Drop Compressed GTFS Folder or ',
-                            html.A('Select File')
-                        ]),
+                        dcc.Upload(
+                            id='upload-data',
+                            children=html.Div(
+                                ['Drag and Drop Compressed GTFS Folder or ',
+                                    html.A('Select File')
+                                ]
+                        ),
                         style={
                             'width': '100%',
                             'height': '60px',
@@ -79,7 +81,7 @@ def create_layout(app: Dash) -> None:
                 ]
             ),
 
-            # Map display panel
+            # Map display panel and Poster Download side-by-side
 
             html.Div(
                 style={'display': 'flex', 'gap': '50px', 'alignItems': 'center'},
@@ -127,16 +129,18 @@ def create_layout(app: Dash) -> None:
                 ]
             ),
 
-            # active feed storage
+            # Active Feed storage
             dcc.Store(id='active-feed-string')
         ]
     )
 
     app.layout = layout
+    return None
 
 
 
 def register_callbacks(app):
+    """Tells Dash what to do when user interacts with app"""
     @app.callback(
         Output('map-container', 'children'),
         Output('active-feed-string', 'data'),
@@ -145,7 +149,7 @@ def register_callbacks(app):
         State('upload-data', 'filename')
     )
     def update_map(contents, demo_choice, filename):
-
+        """Puts map in interactive window"""
         placeholder = html.Div(
             "Select a Transit Feed",
             style={
@@ -157,6 +161,7 @@ def register_callbacks(app):
             })
         
         def label_box(feed):
+            """adds label box"""
             return html.Div(
                 feed.agency_name(),
                 style={
@@ -174,6 +179,7 @@ def register_callbacks(app):
                 }
             )
         def website_box(feed):
+                """adds website link"""
                 return html.Div(children=html.A(f"Agency Website", href=feed.agency_url(), target="_blank"),
                 style={
                     "marginTop": "20px",
@@ -190,7 +196,7 @@ def register_callbacks(app):
                     "marginRight": "auto"
                 }
             )
-
+        #If user uploads a file: read the feed and add in the label boxes
         if contents is not None:
             # User uploaded a file
             map_frame, feed_path = read_feed(contents, filename)
@@ -200,6 +206,7 @@ def register_callbacks(app):
                 website_box(feed.Feed(feed_path))
             ]), feed_path
 
+        #If user selects a sample feed: load the sample feed
         elif demo_choice:
             # User picked a sample dataset
             map_frame, feed_path = load_sample_feed(demo_choice)
@@ -209,6 +216,7 @@ def register_callbacks(app):
                 website_box(feed.Feed(feed_path))
             ]), feed_path
         
+        #Before user does anything use the placeholder
         else:
             # Neither uploaded nor selected
             return placeholder, None
@@ -220,8 +228,9 @@ def register_callbacks(app):
     State('active-feed-string', 'data'),  
     State('include-summary-input', 'value'),
     prevent_initial_call=True
-)
+    )
     def throw_poster(n_clicks, filename, heatmap_choice):
+        "generates poster and sends it to the button"
         if not filename:
             return None  # no feed selected, nothing to generate
 
@@ -230,10 +239,11 @@ def register_callbacks(app):
     
 
 def read_feed(contents, filename):
-    #contents is what is uploaded, filename the original file name "folder.zip"
-    
-    # Interpreting contents: upload -> filename for unzipped folder of gtfs data
+    """reads feed from drag and drop box, decoding the uploaded zip file,
+    saves the zip and the extracted file, creates the feed object, and returns 
+    html iframe of map"""
 
+    # Interpreting contents: upload -> filename for unzipped folder of gtfs data
     #decoding contents
     content_type, content_string = contents.split(',')
     decoded = base64.b64decode(content_string)
@@ -258,6 +268,8 @@ def read_feed(contents, filename):
 
 
 def load_sample_feed(demo_choice):
+    """creates instance of feed object from sample data and returns 
+    html iframe of map"""
 
     sample_feed_path = "data/samples/gtfs_files"
     sample_paths = {

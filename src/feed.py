@@ -55,7 +55,6 @@ class Feed:
     def agency(self):
         return extract_file('agency.txt', self)
 
-    #cond.required
     def calendar_dates(self):
         return extract_file('calendar_dates.txt', self)
 
@@ -91,36 +90,30 @@ class Feed:
         self.conn.commit()
         return None
     
-    def _get_table_columns(self, table_name):
+    def _get_table_columns(self, table_name: str)-> list:
         """Gets the columns of a table so that the dfs uploaded can be filtered (avoids errors)"""
         self.cursor.execute(f"PRAGMA table_info({table_name})")
         return [row[1] for row in self.cursor.fetchall()]  
 
-    # def _insert_data(self):
-    #     self.agency().to_sql('agency', self.conn, if_exists='replace', index=False)
-    #     self.stops().to_sql('stops', self.conn, if_exists='replace', index=False)
-    #     self.shapes().to_sql('shapes', self.conn, if_exists='replace', index=False)
-    #     self.routes().to_sql('routes', self.conn, if_exists='replace', index=False)
-    #     self.trips().to_sql('trips', self.conn, if_exists='replace', index=False)
-    #     self.transfers().to_sql('transfers', self.conn, if_exists='replace', index=False)
-    #     self.calendar_dates().to_sql('calendar_dates', self.conn, if_exists='replace', index=False)
-    #     self.stop_times().to_sql('stop_times', self.conn, if_exists='replace', index=False)
 
     def insert_dataframe(self, df: pd.DataFrame, table_name: str):
-        """inserts data from a pandas dataframe to the database"""
+        """inserts data from a pandas dataframe for each table to the database"""
+        #removes columns that don't go in the final database (optional columns, non-standard columns)
         filtered_df = df[[col for col in df.columns if col in self._get_table_columns(table_name)]]
         columns = filtered_df.columns.tolist()
         placeholders = ', '.join(['?'] * len(columns))
         insert_sql = f"INSERT INTO {table_name} ({', '.join(columns)}) VALUES ({placeholders})"
 
+        #insert data
         for _, row in filtered_df.iterrows():
             values = [None if pd.isna(val) else val for val in row]
             self.cursor.execute(insert_sql, values)
 
         self.conn.commit()
+        return None
 
     def _insert_data(self):
-        """inserts data into database for all essential files"""
+        """inserts data into database for all ESSENTIAL files"""
         self.insert_dataframe(self.agency(), 'agency')
         self.insert_dataframe(self.stops(), 'stops')
         self.insert_dataframe(self.shapes(), 'shapes')
@@ -128,6 +121,7 @@ class Feed:
         self.insert_dataframe(self.trips(), 'trips')
         self.insert_dataframe(self.stop_times(), 'stop_times')
 
+        return None
 
     def close(self):
         self.conn.close()
@@ -151,7 +145,8 @@ class Feed:
         return shape_points
     
     def trips_shapes_routes(self) -> pd.DataFrame:
-        """returns geodataframe with trip, route, and shape data for mapping"""
+        """returns geodataframe with trip, route, and shape data for mapping. removes 
+        duplicate linesrtrings"""
 
         sql = """ SELECT * FROM trips 
                  JOIN routes USING (route_id)
@@ -179,7 +174,6 @@ class Feed:
         trips_shapes_routes_unique.drop(columns='normalized', inplace=True)
 
         
-        
         return trips_shapes_routes_unique
     
     #other functions
@@ -189,22 +183,28 @@ class Feed:
     
     #other functions
     def agency_url(self) -> str:
-        "Returns agency name as a string"
+        "Returns agency url as a string"
         return self.agency()['agency_url'][0]
         
 
-    def departure_info(self):
-        """"returns a dictionary of departure info by stop id for pop"""
+    def departure_info(self)-> dict:
+        """"returns a dictionary of departure info by stop id for pop ups"""
+
         times = self.stop_times()
+
+        #converting departure time to a time format to get frequency
         times['departure_time'] = pd.to_timedelta(times['departure_time'])
+
+        #info for each stop
         grouped = times.groupby(['stop_id'])
         
         dept_info = {}
 
         for stop_id, group in grouped:
             times = group['departure_time'].sort_values()
+            #if there is only one departure, there is no frequency to measure
             if len(times) < 2:
-                freq = "N/A"
+                freq = "Infrequent"
             else:
                 deltas = times.diff().dropna()
                 avg_freq = deltas.mean()
@@ -220,13 +220,14 @@ class Feed:
     
 
     def route_freq(self):
-        """returns table of top 10 routes by hourly frequency"""
+        """returns table of top 10 routes and hourly frequency"""
         route_freq = pd.read_sql(my_sql.route_freq_sql, self.conn)
         pivot = route_freq.pivot(index='route_id',  columns='hour', values='trip_count').fillna(0)
         return pivot
     
     
-def extract_file(file: str, feed: Type['Feed']):
+def extract_file(file: str, feed: Type['Feed'])-> pd.DataFrame:
+    """reads csv for individual table methods"""
 
     files = feed.get_files()
     gtfs_path = feed.gtfs_path()
@@ -238,7 +239,6 @@ def extract_file(file: str, feed: Type['Feed']):
         return data
     
     else:
-        print(f'File "{file_path}" is missing.')
         return None
     
 

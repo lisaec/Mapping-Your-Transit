@@ -3,11 +3,18 @@ import folium
 import warnings
 warnings.filterwarnings('ignore')
 
-def live_map(feed):
+def live_map(feed) -> folium.Map:
+
+    """takes a feed and creates an interactive map, returning the html map
+    to put into the dash app"""
+
+    #initializing map
     m = folium.Map(location= feed.center_pt(), zoom_start=12, tiles="Cartodb Positron")
 
+    #generating departure info (takes some time)
     departures = feed.departure_info()
 
+    #ploting each route line
     for index,row in feed.trips_shapes_routes().iterrows():
 
         folium.PolyLine(row.shape_points.coords,
@@ -17,6 +24,7 @@ def live_map(feed):
                         popup = f'Route: {row.route_short_name} - {row.route_long_name}'
                        ).add_to(m)
 
+    #plot each stop
     for index, row in feed.stops().iterrows():
         if row.stop_id in departures:
             popup = f'{row.stop_name}<br>{departures[row.stop_id]}'
@@ -36,13 +44,3 @@ def live_map(feed):
 
     return m
 
-
-#keep if adding tool tips
-# location_types = {
-#     None : "Stop (or Platform)",
-#     0: "Stop (or Platform)",
-#     1: "Station",
-#     2: "Entrance/Exit",
-#     3: "Generic Node",
-#     4: "Boarding Area"
-# }

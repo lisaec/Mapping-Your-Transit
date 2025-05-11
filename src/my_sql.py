@@ -1,3 +1,5 @@
+
+#SQL statements to make each table
 build_tables = [ 
     """CREATE TABLE IF NOT EXISTS agency (
             agency_id TEXT PRIMARY KEY,
@@ -142,6 +144,7 @@ build_tables = [
 
 ]
 
+#SQL statement to get hourly frequency by route
 route_freq_sql = """SELECT 
         trips.route_id,
         CAST(SUBSTR(arrival_time, 1, 2) AS INTEGER) AS hour,

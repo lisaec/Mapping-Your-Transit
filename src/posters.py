@@ -16,7 +16,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-def map(feed, Heatmap = True):
+def map(feed, Heatmap = True)-> str:
     
     """Makes 11x17 poster with map, route legend, and an optional heatmap. 
     saves poster in outputs folder and returns the name of the file"""
