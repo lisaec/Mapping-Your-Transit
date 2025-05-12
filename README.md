@@ -47,7 +47,9 @@ When downloading your own GTFS data, it is highly recommended that you rename th
 
 While there is no hard upper limit on the size of GTFS feed that can be used in Mapping Your Transit, it is highly recommended to avoid extremely large feeds, as they will take a long time to process and may cause the app to crash. For large cities with complex transit systems, it is suggested to limit the GTFS data to a single mode of transit if individual feeds are available (eg only subway lines or bus routes). 
 
-If you are experiencing unexpected errors, you can check your feed using this [Online Validator](https://gtfs-validator.mobilitydata.org/) by Mobility Data for a report of any inherent errors
+If you are experiencing unexpected errors, you can check your feed using this [Online Validator](https://gtfs-validator.mobilitydata.org/) by Mobility Data for a report of any inherent errors.
+
+There is also a zip file included for San Diego transit included in the user data folder if you are interested in trying out the drag and drop features.
 
 ## GTFS Data
 This project is built using GTFS Data, which is a well documented open standard data format used internationally to make transit data widely available to the public. Initially designed by Google engineers and known as Google Transit Feed Specification, it is a widely used standard that makes it possible for third party navigation apps to include transit modes of transportation in their trip planning. It is made up of several tables holding data on routes, stops, schedules, and geospatial features. 
