@@ -80,6 +80,13 @@ There is also a **data** folder that holds sample GTFS feeds and pre-created dat
 
 ## Methodology
 
+When using Mapping Your Transit, users can upload data or choose from an existing selection of cities. When a sample feed is selected, the feed class connects to a pre-existing database. When a user uploads a feed, the initializing the feed class builds a new database and inserts the data from the uploaded files.  
+
+A primary focus of this project that is very prevalent in the data processing stage is making sure that all legitimate GTFS feeds are compatible with the way data is handled and transformed, so that users are limited as little as possible when using the system to create and explore maps. In order to prioritize compatibility with any GTFS feeds, I limit the files used in the project, check for missing essential files and unusual data types. Testing for the project was done using a diverse set of feeds in an attempt to anticipate these errors. 
+
+Interactive maps are created using Folium, which integrates with the Leaflet.js library to display geospatial data directly in the user interface These maps are color-coded by route and feature clickable popups displaying route names, stops, frequencies, and service days. Static poster maps are generated using Matplotlib, using the Shapely library to streamline access of geospatial components. The entire user interface is built using Dash, a Python framework for interactive web apps.
+
+
 
 
 
