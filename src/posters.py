@@ -1,6 +1,5 @@
 from src import feed
 import importlib
-import geopandas as gpd
 import numpy as np
 from matplotlib.patches import Rectangle
 from matplotlib.gridspec import GridSpec
@@ -68,12 +67,12 @@ def map(feed, Heatmap = True)-> str:
         edge = 1
 
 
-    # Plot each Route
-    for index,row in feed.trips_shapes_routes().iterrows():
-        x, y = row.shape_points.xy
+    for index, row in feed.trips_shapes_routes().iterrows():
+        line = row['shape_points']
+        x, y = line.xy  
         ax.plot(x, y,
-                      linewidth = linewidth, 
-                      color = f"#{row.route_color}")
+                linewidth=linewidth,
+                color=f"#{row['route_color']}")
 
     #plot each stop 
     

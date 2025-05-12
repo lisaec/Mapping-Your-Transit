@@ -2,7 +2,8 @@ from src import feed
 import plotly.graph_objects as go
 import numpy as np
 
-def heatmap(feed):
+def heatmap(feed) -> go.Figure:
+    """creates interactive plotly figure of top route frequency by hour for user interface"""
     # Get data
     data = feed.route_freq()
     value = data.values

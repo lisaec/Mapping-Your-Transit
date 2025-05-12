@@ -4,7 +4,6 @@ import os
 from typing import Type
 from src import my_sql
 import sqlite3
-import geopandas as gpd
 from shapely.geometry import LineString
 
 
@@ -168,15 +167,17 @@ class Feed:
     
         return shape_points
     
+
+    
     def trips_shapes_routes(self) -> pd.DataFrame:
-        """returns geodataframe with trip, route, and shape data for mapping. removes 
+        """returns Dataframe with trip, route, and shape data for mapping. removes 
         duplicate linesrtrings"""
 
         sql = """ SELECT * FROM trips 
-                 JOIN routes USING (route_id)
-                 
-                 WHERE shape_id IS NOT NULL
-                 and route_color IS NOT NULL;"""
+                JOIN routes USING (route_id)
+                
+                WHERE shape_id IS NOT NULL
+                and route_color IS NOT NULL;"""
         
         trips_routes = pd.read_sql(sql, self.conn)
         shapes = self.shape_pts().to_frame().reset_index()
@@ -185,7 +186,7 @@ class Feed:
         shapes['shape_id'] = shapes['shape_id'].astype(str)
         
         trips_shapes_routes = trips_routes.merge(shapes, on='shape_id', how='left')
-        trips_shapes_routes = gpd.GeoDataFrame(trips_shapes_routes, geometry = "shape_points")
+        return trips_shapes_routes
 
         #removing duplicate linestrings for speed and clean-ness
         def normalize_linestring(ls):
