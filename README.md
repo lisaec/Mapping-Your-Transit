@@ -6,6 +6,8 @@ Public transportation is an important tool that supports communities all over th
 
 GTFS data is widely available for almost any regional transit organization in the United States, and a simple google search of “GTFS” and a city name will usually find a link to download the text files that make up a GTFS database. While transit maps are widely available for navigational purposes from regional agencies themselves, stylized “fun” transit maps can be hard to find. Using this standardized data, users can use this project to make cohesive, aesthetically pleasing maps for unique places with the click of a button.
 
+<img width="1205" alt="Image" src="https://github.com/user-attachments/assets/96566e48-c789-469d-98c1-bfc96f15833d" />
+
 ## User Guide
 
 ### Set Up Instructions
