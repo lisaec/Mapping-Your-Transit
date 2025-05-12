@@ -192,7 +192,7 @@ def map(feed, Heatmap = True)-> str:
         ax2.set_yticklabels(feed.route_freq().index)
 
         # axis labels
-        ax2.set_xlabel("Hour (8am - 8pm) ", fontsize=12, fontname='Helvetica')
+        ax2.set_xlabel("Hour (8am - 8pm)", fontsize=12, fontname='Helvetica')
 
 
         # Remove gridlines

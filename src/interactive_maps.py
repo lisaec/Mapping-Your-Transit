@@ -23,13 +23,21 @@ def live_map(feed) -> folium.Map:
                         opacity=1,
                         popup = f'Route: {row.route_short_name} - {row.route_long_name}'
                        ).add_to(m)
+        
+    #selecting only the stop info we need, removing null stops and the simple stop types
+    stop_sql = """ SELECT stop_id, location_type, stop_lat, stop_lon, stop_name
+            FROM stops
+            WHERE location_type IS NULL OR location_type == 0 OR location_type == 1
+            AND stop_lat NOT NULL AND stop_lon NOT NULL;"""
+
+    stops = pd.read_sql(stop_sql, feed.conn)
 
     #plot each stop
-    for index, row in feed.stops().iterrows():
+    for index, row in stops.iterrows():
         if row.stop_id in departures:
-            popup = f'{row.stop_name}<br>{departures[row.stop_id]}'
+            popup = f"{row['stop_name']}<br>{departures[row['stop_id']]}"
         else:
-            popup = f'{row.stop_name}'
+            popup = f"{row['stop_name']}"
         folium.CircleMarker(
                 location=[row['stop_lat'], row['stop_lon']],
                 radius = 2,

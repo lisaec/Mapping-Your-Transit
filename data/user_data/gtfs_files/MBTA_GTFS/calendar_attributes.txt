@@ -1,0 +1,58 @@
+service_id,service_description,service_schedule_name,service_schedule_type,service_schedule_typicality,rating_start_date,rating_end_date,rating_description
+Boat-EastBoston-Saturday-Summer-25,Saturday schedule,Saturday,Saturday,1,20250303,,Summer
+Boat-EastBoston-Sunday-Summer-25,Sunday schedule,Sunday,Sunday,1,20250303,,Summer
+Boat-F1-Weekday-Summer-25,Weekday schedule,Weekday,Weekday,1,20250303,,Summer
+Boat-F4-Saturday-Summer-25,Saturday schedule,Saturday,Saturday,1,20250303,,Summer
+Boat-F4-Sunday-Summer-25,Sunday schedule,Sunday,Sunday,1,20250303,,Summer
+Boat-Lynn-Saturday-Summer-25,Saturday schedule,Saturday,Saturday,1,20250303,,Summer
+Boat-Lynn-Sunday-Summer-25,Sunday schedule,Sunday,Sunday,1,20250303,,Summer
+Boat-Lynn-Weekday-Summer-25,Weekday schedule,Weekday,Weekday,1,20250303,,Summer
+Boat-Lynn-WeekdayLimitedWhale-Summer-25,Weekday schedule,Weekday,Weekday,1,20250303,,Summer
+MemorialDay,Holiday (Sunday schedule),Holiday,Sunday,3,20250406,20250614,Spring
+Orange-4-Saturday-cf44c,Saturday schedule (Trackwork),Saturday (Trackwork),Saturday,4,20250510,20250518,Spring 2025
+Orange-4-Sunday-cf44c,Sunday schedule (Trackwork),Sunday (Trackwork),Sunday,4,20250510,20250518,Spring 2025
+Orange-4-Weekday-725fe,Weekday schedule (Trackwork),Weekday (Trackwork),Weekday,4,20250509,20250509,Spring 2025
+Orange-4-Weekday-cf44c,Weekday schedule (Trackwork),Weekday (Trackwork),Weekday,4,20250510,20250518,Spring 2025
+Orange-5-Saturday-cf44c,Saturday schedule (Trackwork),Saturday (Trackwork),Saturday,4,20250510,20250518,Spring 2025
+Orange-5-Sunday-cf44c,Sunday schedule (Trackwork),Sunday (Trackwork),Sunday,4,20250510,20250518,Spring 2025
+Orange-5-Weekday-725fe,Weekday schedule (Trackwork),Weekday (Trackwork),Weekday,4,20250509,20250509,Spring 2025
+Orange-5-Weekday-cf44c,Weekday schedule (Trackwork),Weekday (Trackwork),Weekday,4,20250510,20250518,Spring 2025
+PRIV22025-hpj25017-Sunday-01,Sunday schedule,Sunday,Sunday,1,20250406,20250614,Spring
+RTL22025-hmo25011-Weekday-01,Weekday schedule,Weekday,Weekday,1,20250406,20250614,Spring
+RTL22025-hmo25016-Saturday-01,Saturday schedule,Saturday,Saturday,1,20250406,20250614,Spring
+RTL22025-hmo25017-Sunday-01,Sunday schedule,Sunday,Sunday,1,20250406,20250614,Spring
+RTL22025-hmo25ea1-Weekday-01,Weekday schedule (modified service),Weekday (modified service),Weekday,4,20250406,20250614,Spring
+RTL22025-hmo25on1-Weekday-01,Weekday schedule (modified service),Weekday (modified service),Weekday,4,20250406,20250614,Spring
+RTL22025-hmo25on6-Saturday-01,Saturday schedule (modified service),Saturday (modified service),Saturday,4,20250406,20250614,Spring
+RTL22025-hmo25on7-Sunday-01,Sunday schedule (modified service),Sunday (modified service),Sunday,4,20250406,20250614,Spring
+SPR25-NORTHSS-Wnd-6-S6561ad1d-HvlBrdVn,Weekend schedule (modified service),Weekend (modified service),Weekend,4,20250324,,Spring/Summer
+SPRING2025-N-Wdy-8-S6561ad1d-HvlBrdVn,Weekday schedule (modified service),Weekday (modified service),Weekday,4,20250324,,Spring/Summer
+SPRING2025-NORTHSS-Weekend-6,Weekend schedule (modified service),Weekend (modified service),Weekend,4,20250324,,Spring/Summer
+SPRING2025-NORTHSS-Weekend-6-S7d8482ee,Weekend schedule (modified service),Weekend (modified service),Weekend,4,20250324,,Spring/Summer
+SPRING2025-NORTHSS-Weekend-6-S9d378dcf,Weekend schedule (modified service),Weekend (modified service),Weekend,4,20250324,,Spring/Summer
+SPRING2025-NORTHWKD-Weekday-8,Weekday schedule (modified service),Weekday (modified service),Weekday,4,20250324,,Spring/Summer
+SPRING2025-NORTHWKD-Weekday-8-S7d8482ee,Weekday schedule (modified service),Weekday (modified service),Weekday,4,20250324,,Spring/Summer
+SPRING2025-NORTHWKD-Weekday-8-S9d378dcf,Weekday schedule (modified service),Weekday (modified service),Weekday,4,20250324,,Spring/Summer
+SPRING2025-SOUTHSS-Weekend-1,Weekend schedule,Weekend,Weekend,1,20250324,,Spring/Summer
+SPRING2025-SOUTHSS-Weekend-1-Sb0e4ed14,Weekend schedule,Weekend,Weekend,1,20250324,,Spring/Summer
+SPRING2025-SOUTHSS-Weekend-1-Sb7371956,Weekend schedule,Weekend,Weekend,1,20250324,,Spring/Summer
+SPRING2025-SOUTHSS-Weekend-1-Sc9a3b080,Weekend schedule,Weekend,Weekend,1,20250324,,Spring/Summer
+SPRING2025-SOUTHSS-Weekend-1-Sd88ed885,Weekend schedule,Weekend,Weekend,1,20250324,,Spring/Summer
+SPRING2025-SOUTHSS-Weekend-3-S85407dc6,Weekend schedule (modified service),Weekend (modified service),Weekend,4,20250324,,Spring/Summer
+SPRING2025-SOUTHSS-Weekend-3-Scbbf1ea5,Weekend schedule (modified service),Weekend (modified service),Weekend,4,20250324,,Spring/Summer
+SPRING2025-SOUTHSS-Weekend-61,Weekend schedule (modified service),Weekend (modified service),Weekend,4,20250324,,Spring/Summer
+SPRING2025-SOUTHSS-Weekend-62,Weekend schedule (modified service),Weekend (modified service),Weekend,4,20250324,,Spring/Summer
+SPRING2025-SOUTHWKD-Weekday-1,Weekday schedule,Weekday,Weekday,1,20250324,,Spring/Summer
+SPRING2025-SOUTHWKD-Weekday-1-Sb0e4ed14,Weekday schedule,Weekday,Weekday,1,20250324,,Spring/Summer
+SPRING2025-SOUTHWKD-Weekday-1-Sb7371956,Weekday schedule,Weekday,Weekday,1,20250324,,Spring/Summer
+SPRING2025-SOUTHWKD-Weekday-1-Sc9a3b080,Weekday schedule,Weekday,Weekday,1,20250324,,Spring/Summer
+SPRING2025-SOUTHWKD-Weekday-1-Sd88ed885,Weekday schedule,Weekday,Weekday,1,20250324,,Spring/Summer
+SPRING2025-SOUTHWKD-Weekday-3-S85407dc6,Weekday schedule (modified service),Weekday (modified service),Weekday,4,20250324,,Spring/Summer
+SPRING2025-SOUTHWKD-Weekday-3-Scbbf1ea5,Weekday schedule (modified service),Weekday (modified service),Weekday,4,20250324,,Spring/Summer
+SPRING2025-SOUTHWKD-Weekday-62,Weekday schedule (modified service),Weekday (modified service),Weekday,4,20250324,,Spring/Summer
+SpringSaturday,Saturday schedule,Saturday,Saturday,1,20250406,20250614,Spring
+SpringSunday,Sunday schedule,Sunday,Sunday,1,20250406,20250614,Spring
+SpringWeekday,Weekday schedule,Weekday,Weekday,1,20250406,20250614,Spring
+SummerWeekday,Weekday schedule,Weekday,Weekday,1,20250303,,Summer
+canonical,Canonical reference trips only,Canonical reference trips,Other,6,20220313,,Reference
+fare_regular,Regular fares,Regular,Other,0,20231217,,Fares

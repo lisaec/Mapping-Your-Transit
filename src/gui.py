@@ -9,6 +9,7 @@ import os
 from src import feed
 from src import interactive_maps
 from src import posters
+from src import heatmap
 importlib.reload(feed)
 importlib.reload(posters)
 
@@ -27,7 +28,7 @@ def run_app() -> None:
     create_layout(app)
     register_callbacks(app)
 
-    app.run(debug=False)
+    app.run(debug=False) 
 
 def create_layout(app: Dash) -> None:
     """Sets up the layout of the App"""
@@ -35,6 +36,7 @@ def create_layout(app: Dash) -> None:
     #Main Layout (contains all main features)
     layout = html.Div(
         id='main-div',
+        style={'padding': '40px'},
         children=[
             html.H1('Mapping Your Transit'), #title
             html.Hr(), #horizontal Line
@@ -74,14 +76,15 @@ def create_layout(app: Dash) -> None:
                                 'borderStyle': 'dashed',
                                 'borderRadius': '5px',
                                 'textAlign': 'center',
-                                'padding': '0 10px'
+                                'padding': '0 px',
+                                'lineHeight': '1.5' 
                             },
                             multiple=False
                         )
                     ]
             ),
 
-            # Map display panel and Poster Download side-by-side
+            # Empty Map display panel
 
             html.Div(
                 style={'display': 'flex', 'gap': '50px', 'alignItems': 'center'},
@@ -107,25 +110,27 @@ def create_layout(app: Dash) -> None:
                                     'marginRight': 'auto'
                                 }
                             ),
-                    html.Br(),
+                    # html.Br(),
 
-                    html.Div(
-                        [html.Label("Include Frequency Summary?"),
-                            dcc.RadioItems(
-                                id='include-summary-input',
-                                options=[
-                                    {'label': 'Yes', 'value': True},
-                                    {'label': 'No', 'value': False}
-                                ],
-                                value= True,  # default choice
-                                labelStyle={'display': 'inline-block', 'margin-right': '30px'}
-                            ),
-                            html.Br(), 
-                            dbc.Button("Download Poster Map", id="btn_txt", color = "secondary", className="me-1")
-                        ]
-                    ),
+                    # html.Div( 
+                    #     [
+                    #         html.H3("Create a Poster Map"),
+                    #         html.Label("Include Frequency Summary?"),
+                    #         dcc.RadioItems(
+                    #             id='include-summary-input',
+                    #             options=[
+                    #                 {'label': 'Yes', 'value': True},
+                    #                 {'label': 'No', 'value': False}
+                    #             ],
+                    #             value= True,  # default choice
+                    #             labelStyle={'display': 'inline-block', 'margin-right': '30px'}
+                    #         ),
+                    #         html.Br(), 
+                    #         dbc.Button("Download Poster", id="btn_txt", color = "secondary", className="me-1")
+                    #     ]
+                    # ),
 
-                    dcc.Download(id="download_text_index")
+                    # dcc.Download(id="download_text_index")
                 ]
             ),
 
@@ -159,13 +164,13 @@ def register_callbacks(app):
                 "lineHeight": "600px",
                 "color": "#666",
             })
-        
         def label_box(feed):
             """adds label box"""
             return html.Div(
                 feed.agency_name(),
                 style={
-                    "marginTop": "20px",
+                    "marginTop": "18px",
+                    "marginBottom": "18px",
                     "textAlign": "center",
                     "padding": "10px",
                     "border": "1px solid black",
@@ -173,7 +178,7 @@ def register_callbacks(app):
                     "color": "black",
                     "fontWeight": "bold",
                     "backgroundColor": 'white',
-                    "width": "50%",
+                    "width": "100%",
                     "marginLeft": "auto",
                     "marginRight": "auto"
                 }
@@ -182,7 +187,7 @@ def register_callbacks(app):
                 """adds website link"""
                 return html.Div(children=html.A(f"Agency Website", href=feed.agency_url(), target="_blank"),
                 style={
-                    "marginTop": "20px",
+                    "marginTop": "15px",
                     "textAlign": "center",
                     "padding": "10px",
                     "border": "1px solid black",
@@ -191,30 +196,142 @@ def register_callbacks(app):
                     "textDecoration": "none",
                     "fontWeight": "bold",
                     "backgroundColor": 'white',
-                    "width": "50%",
+                    "width": "40%",
                     "marginLeft": "auto",
                     "marginRight": "auto"
                 }
             )
+        def insert_heatmap(feed):
+            return [html.H4("Frequency of Top 10 Routes",
+                            style={"color": "white",
+                                   "textAlign": "center"
+                                   }),
+            dcc.Graph(
+                id="heatmap-graph",
+                figure=heatmap.heatmap(feed),
+                config={"displayModeBar": False},  # optional
+                style={"height": "300px",
+                       "width": "500px",
+                        "marginBottom": "15px"}
+            )]
+
         #If user uploads a file: read the feed and add in the label boxes
         if contents is not None:
             # User uploaded a file
             map_frame, feed_path = read_feed(contents, filename)
+
             return html.Div([
-                map_frame,
                 label_box(feed.Feed(feed_path)),
-                website_box(feed.Feed(feed_path))
+                # Horizontal layout with map on left and heatmap + poster tools on right
+                html.Div(
+                    style={
+                        'display': 'flex',
+                        'justifyContent': 'space-between',
+                        'alignItems': 'flex-start',
+                        'gap': '40px',
+                        'padding': '0 0px',   
+                        'width': '100%',       # full width
+                        'boxSizing': 'border-box'  # include padding in width calculation
+                    },
+                    children=[
+
+                        # Left side: the map
+                        html.Div(
+                            [map_frame, website_box(feed.Feed(feed_path))],
+                            style={
+                                'marginTop': '20px',
+                                'width': '70%',
+                                'marginLeft': 'auto',
+                                'marginRight': 'auto'
+                            }
+                        ),
+
+                        # Right side: heatmap and poster tools stacked
+                        html.Div(
+                            style={"width": "30%"},
+                            children=[
+                                html.Div(
+                                    children=insert_heatmap(feed.Feed(feed_path)),
+                                    style={"marginBottom": "40px"}
+                                ),
+                                html.H3("Create a Poster Map"),
+                                html.Label("Include Frequency Summary?"),
+                                dcc.RadioItems(
+                                    id='include-summary-input',
+                                    options=[
+                                        {'label': 'Yes', 'value': True},
+                                        {'label': 'No', 'value': False}
+                                    ],
+                                    value=True,
+                                    labelStyle={'display': 'inline-block', 'margin-right': '30px'}
+                                ),
+                                html.Br(),
+                                dbc.Button("Download Poster", id="btn_txt", color="secondary", className="me-1"),
+                                dcc.Download(id="download_text_index")
+                            ]
+                        )
+                    ]
+                )
             ]), feed_path
 
         #If user selects a sample feed: load the sample feed
         elif demo_choice:
             # User picked a sample dataset
             map_frame, feed_path = load_sample_feed(demo_choice)
+            # Horizontal layout with map on left and heatmap + poster tools on right
             return html.Div([
-                map_frame,
-                label_box(feed.Feed(feed_path)),
-                website_box(feed.Feed(feed_path))
-            ]), feed_path
+                        label_box(feed.Feed(feed_path)),
+                        html.Div(
+                        style={
+                            'display': 'flex',
+                            'justifyContent': 'space-between',
+                            'alignItems': 'flex-start',
+                            'gap': '40px',
+                            'padding': '0 00px',   # smaller side padding
+                            'width': '100%',       # full width
+                            'boxSizing': 'border-box'  # include padding in width calculation
+                        },
+                        children=[
+
+                            # Left side: the map
+                            html.Div(
+                                [map_frame, website_box(feed.Feed(feed_path))],
+                                style={
+                                    'marginTop': '20px',
+                                    'width': '70%',
+                                    'marginLeft': 'auto',
+                                    'marginRight': 'auto'
+                                }
+                            ),
+
+                            # Right side: heatmap and poster tools stacked
+                            html.Div(
+                                style={"width": "30%"},
+                                children=[
+                                    html.Div(
+                                        children=insert_heatmap(feed.Feed(feed_path)),
+                                        style={"marginBottom": "40px"}
+                                    ),
+                                    html.H3("Create a Poster Map"),
+                                    html.Label("Include Frequency Summary?"),
+                                    dcc.RadioItems(
+                                        id='include-summary-input',
+                                        options=[
+                                            {'label': 'Yes', 'value': True},
+                                            {'label': 'No', 'value': False}
+                                        ],
+                                        value=True,
+                                        labelStyle={'display': 'inline-block', 'margin-right': '30px'}
+                                    ),
+                                    html.Br(),
+                                    dbc.Button("Download Poster", id="btn_txt", color="secondary", className="me-1"),
+                                    dcc.Download(id="download_text_index")
+                                ]
+                            )       
+                        ]
+                    )]
+            
+                ), feed_path
         
         #Before user does anything use the placeholder
         else:
@@ -264,7 +381,10 @@ def read_feed(contents, filename):
     folium_map = interactive_maps.live_map(gtfs_feed)
     map_html = folium_map.get_root().render()
 
-    return html.Iframe(srcDoc=map_html, width='70%', height='600', style={"border": "none"}), feed_filename 
+    return html.Iframe(srcDoc=map_html,
+                       width='100%',
+                       height='600',
+                       style={"border": "none"}), feed_filename 
 
 
 def load_sample_feed(demo_choice):
@@ -285,4 +405,7 @@ def load_sample_feed(demo_choice):
     folium_map = interactive_maps.live_map(gtfs_feed)
     map_html = folium_map.get_root().render()
 
-    return html.Iframe(srcDoc=map_html, width='70%', height='600', style={"border": "none"}), gtfs_folder_path
+    return html.Iframe(srcDoc=map_html,
+                       width='100%',
+                       height='600',
+                       style={"border": "none"}), gtfs_folder_path

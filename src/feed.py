@@ -22,6 +22,9 @@ class Feed:
         self.parent_dir = os.path.dirname(os.path.dirname(gtfs_path))
         self.db_path = os.path.join(self.parent_dir, "databases", f"{self.name}.db")
 
+         # Check for required files
+        self._validate_required_files()
+
         #connecting to database
         self.conn = sqlite3.connect(self.db_path)
         self.cursor = self.conn.cursor()
@@ -39,6 +42,27 @@ class Feed:
     def get_files(self):
         """list of files in gtfs"""
         return os.listdir(self._gtfs_path)
+    
+    def _validate_required_files(self):
+
+        """Checks if all required files are present in gtfs folder and raises an error if not"""
+        REQUIRED_FILES = [
+        "agency.txt",
+        "stops.txt",
+        "routes.txt",
+        "shapes.txt",
+        "trips.txt",
+        "stop_times.txt"
+        ]
+        missing_files = []
+        for filename in REQUIRED_FILES:
+            if filename not in self.get_files():
+                missing_files.append(filename)
+        if missing_files:
+            raise FileNotFoundError(
+                f"Missing required GTFS files in {self._gtfs_path}: {', '.join(missing_files)}"
+            )
+        return None
     
     #methods to access each file
     
