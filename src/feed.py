@@ -186,7 +186,7 @@ class Feed:
         shapes['shape_id'] = shapes['shape_id'].astype(str)
         
         trips_shapes_routes = trips_routes.merge(shapes, on='shape_id', how='left')
-        return trips_shapes_routes
+
 
         #removing duplicate linestrings for speed and clean-ness
         def normalize_linestring(ls):
@@ -194,7 +194,7 @@ class Feed:
             coords = list(ls.coords)
             return tuple(coords if coords[0] <= coords[-1] else coords[::-1])
 
-        trips_shapes_routes['normalized'] = trips_shapes_routes.geometry.apply(normalize_linestring)
+        trips_shapes_routes['normalized'] = trips_shapes_routes['shape_points'].apply(normalize_linestring)
         trips_shapes_routes_unique = trips_shapes_routes.drop_duplicates(subset='normalized').copy()
         trips_shapes_routes_unique.drop(columns='normalized', inplace=True)
 

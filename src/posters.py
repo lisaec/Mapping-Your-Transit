@@ -6,6 +6,7 @@ from matplotlib.gridspec import GridSpec
 from src.feed import *
 importlib.reload(feed)
 import numpy as np
+from shapely.ops import unary_union
 
 import matplotlib.pyplot as plt
 
@@ -29,7 +30,7 @@ def map(feed, Heatmap = True)-> str:
     # ax2 = fig.add_subplot(gs[1]) #Heat Map
     
     #setting extent of axis
-    minx, miny, maxx, maxy = feed.trips_shapes_routes().total_bounds
+    minx, miny, maxx, maxy = unary_union(feed.trips_shapes_routes()['shape_points']).bounds
     extent = [minx - 0.001, maxx + 0.001, miny - 0.001, maxy + 0.001]
     ax.axis(extent)
     
