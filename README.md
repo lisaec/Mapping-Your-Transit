@@ -10,6 +10,23 @@ GTFS data is widely available for almost any regional transit organization in th
 
 ### Set Up Instructions
 
+This project uses [`uv`](https://github.com/astral-sh/uv) to handle dependencies and virtual environments.
+
+If not already installed [`set up uv`] (https://docs.astral.sh/uv/getting-started/installation/)
+
+Once UV is set up, you can navigate to the cloned repository and set up a virtual environment, which will copy over all required dependencies
+
+```bash
+uv venv
+```
+
+Then go ahead and run the main script to run the app
+
+```bash
+uv venv
+uv run main.py
+```
+
 ### Create Maps
 
 After running main.py, the app will run on the given server and you will be able to access the interactive user interface. 
@@ -41,9 +58,6 @@ This project uses 5 of the essential GTFS Files and the shapes.txt files. **All 
 - **agency.txt** – Provides information about the transit agency operating the service, such as name, URL, and timezone.
 - **trips.txt** – Lists the individual trips for each route and service, linking routes, service calendars, and stop sequences.
 - **shapes.txt** – Contains a list of coordinates associated with the shape of a trip. This is the only innessential file necessary for using Mapping Your Transit
-
-
-
 
 ## Project Structure
 
