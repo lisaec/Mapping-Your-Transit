@@ -6,7 +6,7 @@ Public transportation is an important tool that supports communities all over th
 
 GTFS data is widely available for almost any regional transit organization in the United States, and a simple google search of “GTFS” and a city name will usually find a link to download the text files that make up a GTFS database. While transit maps are widely available for navigational purposes from regional agencies themselves, stylized “fun” transit maps can be hard to find. Using this standardized data, users can use this project to make cohesive, aesthetically pleasing maps for unique places with the click of a button.
 
-<img width="1205" alt="Image" src="https://github.com/user-attachments/assets/96566e48-c789-469d-98c1-bfc96f15833d" />
+<img width="1205" alt="Sample of Mapping Your Transit" src="https://github.com/user-attachments/assets/96566e48-c789-469d-98c1-bfc96f15833d" />
 
 ## User Guide
 
@@ -35,6 +35,9 @@ After running main.py, the app will run on the given server and you will be able
 When using Mapping Your Transit, users can upload data or choose from an existing selection of cities. To try out the existing sample of GTFS data, use the dropdown menu to select your desired location. To upload your own data, drag and drop or select from your files a compressed (.zip) file containing a subfolder of GTFS data. The app will automatically display an interactive map of routes and stops. Click on each route to see it's name, and hover over each stop to see its name and the frequency of its departures. The app also creates a heatmap of the top ten most frequent routes and their hourly frequencies. 
 
 Once you have uploaded or selected a GTFS feed, you will also have the option to download a poster map with or without the frequency heatmap. These posters are 11 x 17 inch wall posters showing routes and stops.
+
+<img width="900" alt="Sample of Poster" src="https://github.com/user-attachments/assets/9a430d89-1dfa-4b82-912f-3bb4ce155606" />
+
 
 ### Finding and using GTFS Data
 
