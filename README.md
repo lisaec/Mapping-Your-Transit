@@ -12,7 +12,7 @@ GTFS data is widely available for almost any regional transit organization in th
 
 This project uses [`uv`](https://github.com/astral-sh/uv) to handle dependencies and virtual environments.
 
-If not already installed [`set up uv`] (https://docs.astral.sh/uv/getting-started/installation/)
+If not already installed [`set up uv`](https://docs.astral.sh/uv/getting-started/installation/)
 
 Once UV is set up, you can navigate to the cloned repository and set up a virtual environment, which will copy over all required dependencies
 

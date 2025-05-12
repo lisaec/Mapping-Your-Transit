@@ -110,27 +110,7 @@ def create_layout(app: Dash) -> None:
                                     'marginRight': 'auto'
                                 }
                             ),
-                    # html.Br(),
-
-                    # html.Div( 
-                    #     [
-                    #         html.H3("Create a Poster Map"),
-                    #         html.Label("Include Frequency Summary?"),
-                    #         dcc.RadioItems(
-                    #             id='include-summary-input',
-                    #             options=[
-                    #                 {'label': 'Yes', 'value': True},
-                    #                 {'label': 'No', 'value': False}
-                    #             ],
-                    #             value= True,  # default choice
-                    #             labelStyle={'display': 'inline-block', 'margin-right': '30px'}
-                    #         ),
-                    #         html.Br(), 
-                    #         dbc.Button("Download Poster", id="btn_txt", color = "secondary", className="me-1")
-                    #     ]
-                    # ),
-
-                    # dcc.Download(id="download_text_index")
+                    
                 ]
             ),
 
@@ -220,19 +200,26 @@ def register_callbacks(app):
             # User uploaded a file
             map_frame, feed_path = read_feed(contents, filename)
 
-            return html.Div([
+            return html.Div(style={
+                            'display': 'flex',
+                            'flexDirection': 'column',  # Stack vertically
+                            'alignItems': 'center',     
+                            'width': '100%',
+                            'margin': 'auto',
+                            'marginTop': '20px',
+                        }, children = [
                 label_box(feed.Feed(feed_path)),
                 # Horizontal layout with map on left and heatmap + poster tools on right
                 html.Div(
                     style={
-                        'display': 'flex',
-                        'justifyContent': 'space-between',
-                        'alignItems': 'flex-start',
-                        'gap': '40px',
-                        'padding': '0 0px',   
-                        'width': '100%',       # full width
-                        'boxSizing': 'border-box'  # include padding in width calculation
-                    },
+                            'display': 'flex',
+                            'justifyContent': 'space-between',
+                            'alignItems': 'flex-start',
+                            'gap': '40px',
+                            'padding': '0 00px',   # smaller side padding
+                            'width': '100%',       # full width
+                            'boxSizing': 'border-box'  # include padding in width calculation
+                        },
                     children=[
 
                         # Left side: the map
@@ -279,7 +266,14 @@ def register_callbacks(app):
             # User picked a sample dataset
             map_frame, feed_path = load_sample_feed(demo_choice)
             # Horizontal layout with map on left and heatmap + poster tools on right
-            return html.Div([
+            return html.Div(style={
+                            'display': 'flex',
+                            'flexDirection': 'column',  # Stack vertically
+                            'alignItems': 'center',     # Center all horizontally
+                            'width': '100%',
+                            'margin': 'auto',
+                            'marginTop': '20px',
+                        }, children = [
                         label_box(feed.Feed(feed_path)),
                         html.Div(
                         style={
