@@ -25,7 +25,6 @@ uv venv
 Then go ahead and run the main script to run the app
 
 ```bash
-uv venv
 uv run main.py
 ```
 
