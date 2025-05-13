@@ -35,7 +35,7 @@ When using Mapping Your Transit, users can upload data or choose from an existin
 
 Once you have uploaded or selected a GTFS feed, you will also have the option to download a poster map with or without the frequency heatmap. These posters are 11 x 17 inch wall posters showing routes and stops.
 
-<img width="900" alt="Sample of Poster" src="https://github.com/user-attachments/assets/9a430d89-1dfa-4b82-912f-3bb4ce155606" />
+<img width="600" alt="Sample of Poster" src="https://github.com/user-attachments/assets/9a430d89-1dfa-4b82-912f-3bb4ce155606" />
 
 
 ### Finding and using GTFS Data
@@ -43,6 +43,8 @@ Once you have uploaded or selected a GTFS feed, you will also have the option to
 GTFS data is publically available for most American transit networks. A google search of a city or transit agency name will usually result in a link to download the desired feed. It is recommended that GTFS data is sourced directly from an agency website, as this will provide the most accurate and up to date information. Transit agencies often have a GTFS subpage linked at the bottom of their website or under a "developers" page. If GTFS data is not available directly from the transit agency, you can also find data on Transit.land, an open data platform with GTFS feeds from 2,500 agencies. 
 
 When downloading your own GTFS data, it is highly recommended that you rename the folder something unique and identifiable to the feed (ie not just "GTFS"), particularly if you intend to create multiple maps. 
+
+**In order to upload your own data, it must be compressed as a .zip file**
 
 While there is no hard upper limit on the size of GTFS feed that can be used in Mapping Your Transit, it is highly recommended to avoid extremely large feeds, as they will take a long time to process and may cause the app to crash. For large cities with complex transit systems, it is suggested to limit the GTFS data to a single mode of transit if individual feeds are available (eg only subway lines or bus routes). 
 
