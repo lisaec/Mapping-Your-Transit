@@ -51,7 +51,8 @@ def create_layout(app: Dash) -> None:
                             options=[
                                 {'label': 'Williamsburg', 'value': 'Williamsburg'},
                                 {'label': 'New York City Subway', 'value': 'New York'},
-                                {'label': 'San Luis Obispo', 'value': 'San Luis Obispo'}
+                                {'label': 'San Luis Obispo', 'value': 'San Luis Obispo'},
+                                {'label': 'Charlottesville', 'value': 'Charlottesville'}
                             ],
                             value = None,
                             placeholder="Select a sample feed",
@@ -389,7 +390,9 @@ def load_sample_feed(demo_choice):
     sample_paths = {
         'New York': 'gtfs_nyc',
         'Williamsburg': 'gtfs_wata',
-        'San Luis Obispo' : 'gtfs_slo'
+        'San Luis Obispo' : 'gtfs_slo',
+        'Charlottesville' : 'gtfs_charlottesville'
+
     }
     
     gtfs_folder_path = os.path.join(sample_feed_path, sample_paths.get(demo_choice))
