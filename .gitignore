@@ -3,7 +3,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-#from ron
 
 *.pyc
 z_*
