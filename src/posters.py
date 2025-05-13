@@ -7,6 +7,8 @@ from src.feed import *
 importlib.reload(feed)
 import numpy as np
 from shapely.ops import unary_union
+import matplotlib
+matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 
@@ -174,10 +176,13 @@ def map(feed, Heatmap = True)-> str:
     fig.text(0.99, -0.001, 'Lisa Coleman | Mapping Your Transit', 
          ha='right', fontsize=10, color='gray')
 
-    
+    poster_file = f'data/outputs/posters/{feed.name}.png'
+
     #HEATMAP
     if Heatmap:
         #Heatmap shows the top ten most frequent routes and their trip frequency from 8 to 8
+        poster_file = f'data/outputs/posters/{feed.name}_Frequency.png'
+        
         ax2 = fig.add_subplot(gs[1])
         
         cax = ax2.imshow(feed.route_freq().values,  cmap='Reds')
@@ -234,8 +239,9 @@ def map(feed, Heatmap = True)-> str:
             fontname='Helvetica',
             backgroundcolor = '#fafafa'
             )
+        
+        
 
-
-    plt.savefig(f'data/outputs/posters/{feed.name}.png', dpi = 500, bbox_inches='tight', pad_inches=0.25)
+    plt.savefig(poster_file, dpi = 500, bbox_inches='tight', pad_inches=0.25)
     
-    return f'data/outputs/posters/{feed.name}.png'
+    return poster_file
