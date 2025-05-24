@@ -95,13 +95,6 @@ def map(feed, Heatmap = True, user_data = False)-> str:
             markersize = stop_size)
 
     #Creating Legend
-
-    #Route Names that are not duplicated and have color
-    route_sql = """ SELECT route_long_name, MIN(route_short_name) AS route_short_name, MIN(route_color) AS route_color
-                FROM routes 
-                WHERE route_color IS NOT NULL
-                GROUP BY route_long_name;"""
-
     
     # Starting y position for the legend
     y_position = 0.97  
@@ -119,6 +112,19 @@ def map(feed, Heatmap = True, user_data = False)-> str:
         )
    
     #Making Legend Entries
+        #Route Names that are not duplicated and have color
+    route_sql = """ SELECT route_long_name, 
+                            MIN(route_short_name) AS route_short_name, 
+                            MIN(
+                                CASE 
+                                    WHEN LOWER(route_color) = 'ffffff' THEN '000000'
+                                    ELSE route_color
+                                END
+                            ) AS route_color
+                        FROM routes 
+                        WHERE route_color IS NOT NULL
+                        GROUP BY route_long_name;"""
+    
     legend_entries = pd.read_sql(route_sql, feed.conn)
 
     #limiting the number of entries in the legend 

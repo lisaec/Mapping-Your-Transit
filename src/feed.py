@@ -173,12 +173,22 @@ class Feed:
         """returns Dataframe with trip, route, and shape data for mapping. removes 
         duplicate linesrtrings"""
 
-        sql = """ SELECT * FROM trips 
+        sql = """
+                SELECT 
+                    trips.*, 
+                    routes.route_id,
+                    routes.route_long_name,
+                    routes.route_short_name,
+                    CASE 
+                        WHEN LOWER(routes.route_color) = 'ffffff' THEN '000000'
+                        ELSE routes.route_color
+                    END AS route_color
+                FROM trips
                 JOIN routes USING (route_id)
-                
                 WHERE shape_id IS NOT NULL
-                and route_color IS NOT NULL;"""
-        
+                AND routes.route_color IS NOT NULL;
+                """
+                
         trips_routes = pd.read_sql(sql, self.conn)
         shapes = self.shape_pts().to_frame().reset_index()
 
