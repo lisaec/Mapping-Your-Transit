@@ -11,7 +11,7 @@ z_*
 #user uploaded data used during testing
 data/user_data/databases/
 data/user_data/gtfs_files/
-# data/outputs/posters/user_uploaded/
+data/outputs/posters/user_uploaded/
 
 
 # C extensions
