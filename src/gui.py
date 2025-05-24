@@ -345,8 +345,13 @@ def register_callbacks(app):
         "generates poster and sends it to the button"
         if not filename:
             return None  # no feed selected, nothing to generate
+        
+        if 'user_data' in filename.split(os.sep):
+            user_data = True
+        else: 
+            user_data = False
 
-        poster_file = posters.map(feed.Feed(filename), Heatmap = heatmap_choice)
+        poster_file = posters.map(feed.Feed(filename), Heatmap = heatmap_choice, user_data = user_data)
         return dcc.send_file(poster_file) 
     
 

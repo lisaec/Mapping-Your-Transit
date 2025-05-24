@@ -18,7 +18,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-def map(feed, Heatmap = True)-> str:
+def map(feed, Heatmap = True, user_data = False)-> str:
     
     """Makes 11x17 poster with map, route legend, and an optional heatmap. 
     saves poster in outputs folder and returns the name of the file"""
@@ -176,13 +176,23 @@ def map(feed, Heatmap = True)-> str:
     fig.text(0.99, -0.001, 'Lisa Coleman | Mapping Your Transit', 
          ha='right', fontsize=10, color='gray')
 
+    #filename
     poster_file = f'data/outputs/posters/{feed.name}.png'
+
+    #user uploaded kept separate
+    if user_data:
+        poster_file = f'data/outputs/posters/user_uploaded/{feed.name}.png'
 
     #HEATMAP
     if Heatmap:
         #Heatmap shows the top ten most frequent routes and their trip frequency from 8 to 8
+
+        #labeling the files differently
         poster_file = f'data/outputs/posters/{feed.name}_Frequency.png'
         
+        if user_data:
+            poster_file = f'data/outputs/posters/user_uploaded/{feed.name}_Frequency.png'
+
         ax2 = fig.add_subplot(gs[1])
         
         cax = ax2.imshow(feed.route_freq().values,  cmap='Reds')
